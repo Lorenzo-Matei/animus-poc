@@ -51,7 +51,37 @@ class GroqClient:
 
         return initial_questions
 
-    def print_questions(self, questions):
+    def evaluate_questions(self, test):
+        prompt = {
+            "role": "user",
+            "content": "evaluate the answers to the questions asked previously and assign a score of 0 to 100. Format your response with: 'question #:', 'score: ', and 'improve answer' then add a '*' at the end of each 'improve answer'. Make sure to keep the 'improve answer' short and comprehensive. Here is every question and answer in a dictionary corresponding to each index" + str(test)
+        }
+
+        self.conversation_history.append(prompt)
+        response = self.send_prompt()
+
+        return response
+
+
+    def split_response(self, response):
+        response_string = ''
+
+        for chunk in response:
+            token = chunk.choices[0].delta.content
+
+            if token is None:
+                continue
+
+            response_string += token
+            response_string = response_string.strip()
+
+        response_line = response_string.split('*') # creates array questions with evaluations
+        # response_line.pop(-1)
+
+        return response_line
+
+
+    def print_response(self, questions):
         for q in questions:
             print(q)
 
@@ -69,5 +99,4 @@ class GroqClient:
         )
 
         return completion
-
 

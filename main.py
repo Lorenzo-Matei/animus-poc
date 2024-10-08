@@ -44,8 +44,13 @@ def main():
     # feeds notes into LLama to generate questions
     i_questions = groq_client.generate_initial_questions(notes_path)
     user_responses = get_user_answers(i_questions)
-
     print(user_responses)
+    print()
+
+    first_eval_response = groq_client.evaluate_questions(user_responses)
+    first_eval_response_list = groq_client.split_response(first_eval_response)
+    groq_client.print_response(first_eval_response_list)
+
 
 
 
